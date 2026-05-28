@@ -1,0 +1,47 @@
+# SPDX-FileCopyrightText: Copyright (c) 2023 - 2026 NVIDIA CORPORATION & AFFILIATES.
+# SPDX-FileCopyrightText: All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+name: segmented_multivar.SegmentedMultivarHrrrEra5Dataset
+
+# Main dataset
+location: 'data'
+conus_dataset_name: 'hrrr_v3'
+hrrr_stats: 'stats_v3_2019_2021'
+
+# Domain
+hrrr_img_size: [512, 640]
+boundary_padding_pixels: 0
+
+# Temporal selection
+dt: 1
+train_years: [2018, 2019, 2020, 2021]
+valid_years: [2022]
+background_stride_hours: 3
+
+# Segmented target horizon:
+# 0-2h every 10min, 2-12h every 3h, 12-24h every 12h
+minutes_0_2h: 10
+minutes_2_12h: 180
+minutes_12_24h: 720
+
+# Variable selection
+invariants: ["lsm", "orog"]
+input_channels: 'all'
+diffusion_channels: "all"
+kept_era5_channels: "all"
+kept_hrrr_channels:
+  - precip
+  - t2m

@@ -90,6 +90,16 @@ def main(cfg: DictConfig):
         rho=sa.get("rho", 7.0),
     )
 
+    use_dataset_forecast_schedule = bool(
+        cfg.inference.get("use_dataset_forecast_schedule", False)
+    ) and hasattr(dataset, "forecast_offsets_hours") and hasattr(dataset, "get_forecast")
+
+    if use_dataset_forecast_schedule:
+        forecast_offsets_hours = list(dataset.forecast_offsets_hours)
+        n_steps = len(forecast_offsets_hours)
+    else:
+        forecast_offsets_hours = [float(i) for i in range(n_steps)]
+
     # initialize zarr
     (
         group,
@@ -102,12 +112,15 @@ def main(cfg: DictConfig):
 
     with torch.no_grad():
         for i in range(n_steps):
-            data = dataset[i + hours_since_jan_01]
+            if use_dataset_forecast_schedule:
+                data = dataset.get_forecast(initial_time, i)
+            else:
+                data = dataset[i + hours_since_jan_01]
 
             background = data["background"].to(device=device, dtype=torch.float32)
             background = background.unsqueeze(0)
 
-            if i == 0:
+            if i == 0 or use_dataset_forecast_schedule:
                 state_pred = data["state"][0].to(device=device, dtype=torch.float32)
                 state_pred = state_pred.unsqueeze(0)
                 state_pred_edm = state_pred.clone()
@@ -191,9 +204,10 @@ def main(cfg: DictConfig):
             plt.close(fig)
 
     initial_time_pd = pd.to_datetime(initial_time)
-    val_times = []
-    for i in range(n_steps):
-        val_times.append(initial_time_pd + pd.Timedelta(seconds=i * hours_since_jan_01))
+    val_times = [
+        initial_time_pd + pd.Timedelta(hours=offset_hours)
+        for offset_hours in forecast_offsets_hours
+    ]
 
     save_inference_results_netcdf(
         ds_out_path=cfg.inference.rundir,

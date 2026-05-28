@@ -136,6 +136,31 @@ If training a regression-diffusion model like CorrDiff, add `"regression"` to `m
 
 DiT-type models additionally support scalar conditions that are single numbers that apply to the entire grid. To add these, return the conditions as a 1D NumPy array in the `"scalar_conditions"` key of the dictionary returned by `__getitem__`. Additionally, implement the `scalar_condition_channels` method for the dataset.
 
+### Segmented 0-24h multivariate recipe (precipitation + temperature)
+
+This repository includes a configurable dataset preset for joint precipitation and
+2m-temperature forecasting with segmented lead-time targets:
+
+- 0-2h every 10 minutes
+- 2-12h every 3 hours
+- 12-24h every 12 hours
+
+The dataset implementation is
+`datasets/segmented_multivar.py::SegmentedMultivarHrrrEra5Dataset` and the matching
+configs are:
+
+- `config/regression_segmented_multivar.yaml`
+- `config/diffusion_segmented_multivar.yaml`
+- `config/stormcast_inference_segmented_multivar.yaml`
+
+Training and inference commands:
+
+```bash
+python train.py --config-name regression_segmented_multivar
+python train.py --config-name diffusion_segmented_multivar
+python inference.py --config-name stormcast_inference_segmented_multivar
+```
+
 ### Training Regression Models
 
 You can skip this section if you plan to train a diffusion-only model such as Stormscope.

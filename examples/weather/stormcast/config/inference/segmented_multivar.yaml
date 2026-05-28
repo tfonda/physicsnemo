@@ -1,0 +1,35 @@
+# SPDX-FileCopyrightText: Copyright (c) 2023 - 2026 NVIDIA CORPORATION & AFFILIATES.
+# SPDX-FileCopyrightText: All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+outdir: 'rundir'
+experiment_name: 'segmented-multivar-inference'
+run_id: 0
+rundir: ./${inference.outdir}/${inference.experiment_name}/${inference.run_id}
+regression_checkpoint: segmented_checkpoints/regression/StormCastUNet.0.0.mdlus
+diffusion_checkpoint: segmented_checkpoints/diffusion/EDMPreconditioner.0.0.mdlus
+
+initial_time: "2022-11-04T21:00:00"
+n_steps: 1
+use_dataset_forecast_schedule: true
+
+plot_var_state: "precip"
+plot_var_background: "t2m"
+output_state_channels:
+  - precip
+  - t2m
+save_vertical_vars: []
+save_vertical_levels: []
+save_horizontal_vars: ["precip", "t2m"]
