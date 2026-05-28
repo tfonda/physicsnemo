@@ -442,6 +442,11 @@ class Trainer:
         if "regression" not in self.condition_list:
             return None
 
+        if "CHANGE_ME" in self.cfg.model.regression_weights:
+            raise ValueError(
+                "model.regression_weights is unset. Update the checkpoint path in your config."
+            )
+
         regression_net = Module.from_checkpoint(
             self.cfg.model.regression_weights,
             override_args={"use_apex_gn": self.use_apex_gn}

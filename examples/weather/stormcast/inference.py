@@ -75,6 +75,15 @@ def main(cfg: DictConfig):
     )
 
     # Load pretrained models
+    if "CHANGE_ME" in cfg.inference.regression_checkpoint:
+        raise ValueError(
+            "inference.regression_checkpoint is unset. Update the checkpoint path in your config."
+        )
+    if "CHANGE_ME" in cfg.inference.diffusion_checkpoint:
+        raise ValueError(
+            "inference.diffusion_checkpoint is unset. Update the checkpoint path in your config."
+        )
+
     if "regression" in cfg.model.diffusion_conditions:
         net = Module.from_checkpoint(cfg.inference.regression_checkpoint)
         regression_model = net.to(device)
@@ -90,6 +99,7 @@ def main(cfg: DictConfig):
         rho=sa.get("rho", 7.0),
     )
 
+    forecast_offsets_hours = [float(i) for i in range(n_steps)]
     use_dataset_forecast_schedule = bool(
         cfg.inference.get("use_dataset_forecast_schedule", False)
     ) and hasattr(dataset, "forecast_offsets_hours") and hasattr(dataset, "get_forecast")
@@ -97,8 +107,6 @@ def main(cfg: DictConfig):
     if use_dataset_forecast_schedule:
         forecast_offsets_hours = list(dataset.forecast_offsets_hours)
         n_steps = len(forecast_offsets_hours)
-    else:
-        forecast_offsets_hours = [float(i) for i in range(n_steps)]
 
     # initialize zarr
     (
@@ -205,8 +213,8 @@ def main(cfg: DictConfig):
 
     initial_time_pd = pd.to_datetime(initial_time)
     val_times = [
-        initial_time_pd + pd.Timedelta(hours=offset_hours)
-        for offset_hours in forecast_offsets_hours
+        initial_time_pd + pd.Timedelta(hours=forecast_offset)
+        for forecast_offset in forecast_offsets_hours
     ]
 
     save_inference_results_netcdf(

@@ -18,8 +18,8 @@ outdir: 'rundir'
 experiment_name: 'segmented-multivar-inference'
 run_id: 0
 rundir: ./${inference.outdir}/${inference.experiment_name}/${inference.run_id}
-regression_checkpoint: segmented_checkpoints/regression/StormCastUNet.0.0.mdlus
-diffusion_checkpoint: segmented_checkpoints/diffusion/EDMPreconditioner.0.0.mdlus
+regression_checkpoint: CHANGE_ME/regression/StormCastUNet.0.0.mdlus
+diffusion_checkpoint: CHANGE_ME/diffusion/EDMPreconditioner.0.0.mdlus
 
 initial_time: "2022-11-04T21:00:00"
 n_steps: 1

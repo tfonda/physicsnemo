@@ -161,6 +161,10 @@ python train.py --config-name diffusion_segmented_multivar
 python inference.py --config-name stormcast_inference_segmented_multivar
 ```
 
+Before diffusion training and inference, update checkpoint paths in
+`config/diffusion_segmented_multivar.yaml` and
+`config/inference/segmented_multivar.yaml`.
+
 ### Training Regression Models
 
 You can skip this section if you plan to train a diffusion-only model such as Stormscope.
